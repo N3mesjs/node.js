@@ -1,5 +1,14 @@
 import http from 'http'; //funzione integrata di node.js per gestire le REST API e quindi richieste dei client
+// c'é un problema, se dobbiamo rispondere con un file e quindi usare il core module fs, come faccio? io non ho i metodi __dirname, __filename dato che in es6 non sono disponibili, quindi devo crearli io
+import url from 'url';
+import path from 'path';
+
 const port = 8000;
+const __filename = url.fileURLToPath(import.meta.url); // converto il percorso in un percoso assoluto valido
+console.log(import.meta); //questo import meta contiene le informazioni relative al modulo in esecuzione
+const __dirname = path.dirname(__filename);
+
+console.log(__filename + " " + __dirname);
 
 const server = http.createServer((req, res) => {
     //res.write("ciao");
@@ -20,7 +29,7 @@ const server = http.createServer((req, res) => {
         res.writeHead(201, {
             "Content-Type": "application/json",
         })
-        res.end(JSON.stringify({message: "POST REQUEST"}));
+        res.end(JSON.stringify({message: "POST REQUEST"})); // uso stringify perche voglio convertire un oggetto javascript in un json
     } else if(req.url === "/" && req.method === "GET"){
         res.writeHead(201, {
             "Content-Type": "text-html",
