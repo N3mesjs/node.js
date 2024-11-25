@@ -5,7 +5,7 @@ import path from 'path';
 
 const port = 8000;
 const __filename = url.fileURLToPath(import.meta.url); // converto il percorso in un percoso assoluto valido
-console.log(import.meta); //questo import meta contiene le informazioni relative al modulo in esecuzione
+console.log(import.meta); //questo import.meta contiene le informazioni relative al modulo in esecuzione ed e una funzione di javascript
 const __dirname = path.dirname(__filename);
 
 console.log(__filename + " " + __dirname);
