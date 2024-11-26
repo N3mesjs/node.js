@@ -2,6 +2,7 @@ import http from 'http'; //funzione integrata di node.js per gestire le REST API
 // c'é un problema, se dobbiamo rispondere con un file e quindi usare il core module fs, come faccio? io non ho i metodi __dirname, __filename dato che in es6 non sono disponibili, quindi devo crearli io
 import url from 'url';
 import path from 'path';
+import fs from 'fs/promises'//importo quello con le promises in modo da poter usare async/await
 
 const port = 8000;
 const __filename = url.fileURLToPath(import.meta.url); // converto il percorso in un percoso assoluto valido
@@ -10,7 +11,7 @@ const __dirname = path.dirname(__filename);
 
 console.log(__filename + " " + __dirname);
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
     //res.write("ciao");
     //res.setHeader('Content-Type', 'text-html'); //setHeader é un metodo che mi permette di modificare la tipologia di dati che viene inviata dal server, in questo caso codice html
     //res.statusCode = 404; //modifico lo stato della richiesta
@@ -24,22 +25,29 @@ const server = http.createServer((req, res) => {
     //console.log(req.method);
 
     // Proviamo a fare come express.js quindi per ogni indirizzo ci sara una funzione diversa
-
-    if(req.url === "/" && req.method === "POST"){
-        res.writeHead(201, {
-            "Content-Type": "application/json",
-        })
-        res.end(JSON.stringify({message: "POST REQUEST"})); // uso stringify perche voglio convertire un oggetto javascript in un json
-    } else if(req.url === "/" && req.method === "GET"){
-        res.writeHead(201, {
-            "Content-Type": "text-html",
-        })
-        res.end("<h1>GET REQUEST</h1>");
-    } else {
-        res.writeHead(404, {
-            "Content-Type": "text-html",
-        });
-        res.end("<h1>Page Not Fount <b>404</b></h1>")
+    try {
+        let filepath;
+        if (req.url === "/" && req.method === "POST") {
+            res.writeHead(201, {
+                "Content-Type": "application/json",
+            })
+            res.end(JSON.stringify({ message: "POST REQUEST" })); // uso stringify perche voglio convertire un oggetto javascript in un json
+        } else if (req.url === "/" && req.method === "GET") {
+            filepath = path.join(__dirname, 'index.html'); //path ha il metodo join che mi permette di costruire un path di un file
+            const data = await fs.readFile(filepath);
+            res.writeHead(201, {
+                "Content-Type": "text-html",
+            })
+            res.write(data);
+            res.end();
+        } else {
+            res.writeHead(404, {
+                "Content-Type": "text-html",
+            });
+            res.end("<h1>Page Not Fount <b>404</b></h1>")
+        }
+    } catch (e) {
+        console.error(e)
     }
 })
 
