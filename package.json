@@ -19,6 +19,6 @@
     "express": "^5.2.1",
     "node": "file:",
     "youtubei.js": "^16.0.1",
-    "ytdl-core": "^4.11.5"
+    "yt-dlp-wrap": "^2.3.12"
   }
 }

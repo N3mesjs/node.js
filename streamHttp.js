@@ -12,7 +12,7 @@
  */
 
 import express from 'express';
-import { createReadStream, statSync } from 'node:fs';
+import { createReadStream, statSync} from 'node:fs';
 import cors from 'cors';
 
 const app = express();
