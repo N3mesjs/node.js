@@ -12,7 +12,7 @@
  */
 
 import express from 'express';
-import { createReadStream } from 'node:fs';
+import { createReadStream, statSync } from 'node:fs';
 import cors from 'cors';
 
 const app = express();
@@ -26,6 +26,26 @@ app.get('/stream', (req, res) => {
     })
     readStr.pipe(res);
 })
+
+app.get('/video', (req, res) => {
+  const range = req.headers.range;
+  const videoPath = 'Day35.mp4';
+  const videoSize =  statSync(videoPath).size;
+  const CHUNK_SIZE = 10 ** 6; // 1MB
+  const start = Number(range.replace(/\D/g, ''));
+  const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+  const contentLength = end - start + 1; // +1 perche gli indici partono da 0 e vogliamo la grandezza effettiva
+  const headers = {
+    'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+    'Accept-Ranges': 'bytes',
+    'Content-Length': contentLength,
+    'Content-Type': 'video/mp4',
+  };
+  res.writeHead(206, headers);
+  const videoStream = createReadStream(videoPath, { start, end });
+  videoStream.pipe(res);
+});
+
 
 const server = app.listen(3010, () => {
   console.log('Server is running on http://localhost:3010');
