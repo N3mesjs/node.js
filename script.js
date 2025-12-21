@@ -17,6 +17,7 @@ const utf8Decoder = new TextDecoder("utf-8");
 async function fetchStream(url){
     let charsReceived = 0;
     const response = await fetch(url);
+    console.log(response);
     const reader = response.body.getReader();
 
     reader.read().then(function processText({ done, value }){
